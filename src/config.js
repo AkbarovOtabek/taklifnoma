@@ -16,7 +16,7 @@ export const wedding = {
   music: '',
 
   uz: {
-    names: ['Otabek', 'Mohlaroy'],
+    names: ['Otabek', 'Mohlaroyim'],
     groom: '',
     bride: '',
     venue: 'Uzumzor',
@@ -31,7 +31,7 @@ export const wedding = {
     ],
   },
   ru: {
-    names: ['Отабек', 'Мохларой'],
+    names: ['Отабек', 'Мохларойим'],
     groom: '',
     bride: '',
     venue: 'Узумзор',
