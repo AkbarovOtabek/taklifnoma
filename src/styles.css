@@ -149,6 +149,59 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 .seal-half { position: absolute; inset: 0; }
 .seal-half svg { display: block; width: 100%; height: 100%; }
 .seal-text { font-family: var(--script); font-size: 50px; fill: #6f4c1b; }
+/* золотая рамка по краю экрана: конверт читается как вещь, а не как фон */
+.env-frame {
+  position: absolute;
+  inset: clamp(10px, 3.2vw, 20px);
+  z-index: 8;
+  pointer-events: none;
+  border: 1px solid rgba(231, 205, 146, .4);
+}
+.env-frame::after {
+  content: '';
+  position: absolute;
+  inset: 5px;
+  border: 1px solid rgba(231, 205, 146, .16);
+}
+/* ромбы в углах рамки */
+.env-frame i {
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  background: var(--gold-soft);
+  opacity: .8;
+  transform: rotate(45deg);
+}
+.env-frame i:nth-child(1) { left: -4px; top: -4px; }
+.env-frame i:nth-child(2) { right: -4px; top: -4px; }
+.env-frame i:nth-child(3) { left: -4px; bottom: -4px; }
+.env-frame i:nth-child(4) { right: -4px; bottom: -4px; }
+
+/* тёплый свет за печатью */
+.env-glow {
+  position: absolute;
+  left: 50%;
+  top: 56%;
+  width: min(92vw, 460px);
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  z-index: 6;
+  pointer-events: none;
+  background: radial-gradient(closest-side, rgba(255, 214, 140, .32), rgba(255, 214, 140, .1) 42%, transparent 70%);
+  animation: breathe 6s ease-in-out infinite;
+}
+
+/* шапка: «свадьба» и орнамент */
+.env-top {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: clamp(40px, 8.5vh, 86px);
+  text-align: center;
+}
+.env-top .eyebrow { color: var(--gold-soft); font-size: clamp(11px, 3vw, 13px); letter-spacing: .42em; text-indent: .42em; }
+.env-orn { display: block; width: clamp(120px, 38vw, 160px); height: 16px; margin: 12px auto 0; }
+
 .env-title {
   position: absolute;
   left: 0;
@@ -157,6 +210,20 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   text-align: center;
   color: var(--ivory);
 }
+/* дата на закрытом конверте: гость сразу видит, когда */
+.env-date {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 14px;
+  font-family: var(--caps);
+  font-size: clamp(12px, 3.4vw, 15px);
+  letter-spacing: .3em;
+  text-indent: .3em;
+  color: #fff0cd;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, .5);
+}
+.env-date i { display: block; width: clamp(24px, 8vw, 40px); height: 1px; background: var(--gold-soft); opacity: .55; }
 .env-title h1 {
   font-family: var(--script);
   font-weight: 400;
@@ -167,11 +234,18 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 }
 .env-guest { font-style: italic; font-size: 20px; }
 .env-tap {
-  margin-top: 8px;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: clamp(30px, 6.5vh, 64px);
+  text-align: center;
   font-family: var(--caps);
-  font-size: 12px;
+  font-size: clamp(11px, 3vw, 13px);
   letter-spacing: .28em;
+  text-indent: .28em;
   text-transform: uppercase;
+  color: var(--ivory);
+  text-shadow: 0 1px 8px rgba(0, 0, 0, .55);
 }
 /* цветочная гирлянда на сгибах конверта и шнур под печатью */
 .bouquet {

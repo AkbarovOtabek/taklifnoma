@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
-import { wedding } from '../config.js'
+import { wedding, when } from '../config.js'
 import { GirihLayer } from './Ornaments.jsx'
 import { Bloom } from './Flowers.jsx'
 
@@ -41,6 +41,17 @@ const garland = (side) => {
   // венок у самой печати: сюда садятся самые крупные цветы
   const collar = [[17, 50.5, 1.5], [12.5, 57, 1.6], [19, 61, 1.25], [8, 62.5, 1.1], [22, 55, 0.95]]
   collar.forEach(([dx, y, size], i) => out.push(bloom(50 - dx, y, size, i === 3)))
+
+  // кисть в нижнем углу: идёт по нижнему сгибу от края к печати
+  for (let i = 0; i < 7; i++) {
+    const t = 0.06 + (i / 6) * 0.34
+    out.push(bloom(
+      50 * t + (rnd() - 0.5) * 5,
+      100 - 46 * t + (rnd() - 0.5) * 5,
+      (i % 3 === 1 ? 0.7 : 0.45) + t * 1.1,
+      i % 3 === 1,
+    ))
+  }
   return out
 }
 const garlands = [garland(-1), garland(1)]
@@ -85,7 +96,7 @@ function Seal({ opened }) {
   const half = (side) => (
     <motion.div
       className="seal-half"
-      style={{ clipPath: side < 0 ? 'polygon(0 0,54% 0,46% 30%,56% 52%,44% 74%,52% 100%,0 100%)' : 'polygon(54% 0,100% 0,100% 100%,52% 100%,44% 74%,56% 52%,46% 30%)' }}
+      style={{ clipPath: side < 0 ? 'polygon(0 0,55.2% 0,47.2% 30%,57.2% 52%,45.2% 74%,53.2% 100%,0 100%)' : 'polygon(54% 0,100% 0,100% 100%,52% 100%,44% 74%,56% 52%,46% 30%)' }}
       animate={opened ? { x: side * 70, y: 240, rotate: side * 34, opacity: 0 } : {}}
       transition={{ duration: 1, ease: [0.5, 0, 0.9, 0.6], delay: 0.1 }}
     >
@@ -200,12 +211,38 @@ export default function Envelope({ t, guest, opened, onOpen, onDone }) {
         </div>
       </motion.div>
 
+      <div className="env-glow" aria-hidden="true" />
+      <motion.div
+        className="env-frame"
+        aria-hidden="true"
+        animate={{ opacity: opened ? 0 : 1 }}
+        transition={{ duration: 0.6 }}
+      >
+        <i /><i /><i /><i />
+      </motion.div>
+
       <Cord opened={opened} />
       <Bouquet side={-1} opened={opened} />
       <Bouquet side={1} opened={opened} />
 
       <div className="env-face">
+        <motion.div
+          className="env-top"
+          animate={{ opacity: opened ? 0 : 1, y: opened ? -14 : 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <span className="eyebrow">{t.theWedding}</span>
+          <svg className="env-orn" viewBox="0 0 140 16" aria-hidden="true">
+            <g fill="none" stroke="#e7cd92" strokeOpacity=".7" strokeWidth="1">
+              <path d="M6 8H58M82 8h52" />
+              <path d="M70 2 76 8 70 14 64 8Z" />
+              <path d="M70 5 73 8 70 11 67 8Z" />
+            </g>
+          </svg>
+        </motion.div>
+
         <Seal opened={opened} />
+
         <motion.div
           className="env-title"
           animate={{ opacity: opened ? 0 : 1, y: opened ? 16 : 0 }}
@@ -213,14 +250,20 @@ export default function Envelope({ t, guest, opened, onOpen, onDone }) {
         >
           {guest && <p className="env-guest">{t.dear} {guest}</p>}
           <h1>{t.gate}</h1>
-          <motion.p
-            className="env-tap"
-            animate={{ opacity: [0.45, 1, 0.45] }}
-            transition={{ duration: 2.6, repeat: Infinity, ease: 'easeInOut' }}
-          >
-            {t.tap}
-          </motion.p>
+          <p className="env-date">
+            <i />
+            <span>{when.day} · {String(when.month + 1).padStart(2, '0')} · {when.year}</span>
+            <i />
+          </p>
         </motion.div>
+
+        <motion.p
+          className="env-tap"
+          animate={{ opacity: opened ? 0 : [0.45, 1, 0.45] }}
+          transition={{ duration: 2.6, repeat: Infinity, ease: 'easeInOut' }}
+        >
+          {t.tap}
+        </motion.p>
       </div>
 
       {/* золотая вспышка на переходе к сцене */}
