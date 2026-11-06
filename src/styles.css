@@ -359,22 +359,6 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   transform-origin: 50% 100%;
   animation: couple-sway 9s ease-in-out infinite;
 }
-.couple-veil {
-  transform-box: fill-box;
-  transform-origin: 60% 0;
-  animation: veil-wave 7.5s ease-in-out infinite;
-}
-.couple-train {
-  transform-box: fill-box;
-  transform-origin: 15% 0;
-  animation: veil-wave 11s ease-in-out infinite reverse;
-}
-.couple-sprig {
-  transform-box: fill-box;
-  transform-origin: 50% 100%;
-  animation: couple-sway 7.5s ease-in-out infinite reverse;
-}
-.couple-rim { animation: rim 5.5s ease-in-out infinite; }
 .fx-mist {
   top: 83%;
   width: 28%;
@@ -792,8 +776,6 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   100% { transform: translate(-50%, -50%) translate(-9px, -84px); opacity: 0; }
 }
 @keyframes couple-sway { 0%, 100% { transform: rotate(-.5deg); } 50% { transform: rotate(.5deg); } }
-@keyframes veil-wave { 0%, 100% { transform: skewX(-1.1deg) scaleX(.99); } 50% { transform: skewX(1.3deg) scaleX(1.02); } }
-@keyframes rim { 0%, 100% { opacity: .45; } 50% { opacity: 1; } }
 @keyframes flicker { 0%, 100% { opacity: .85; } 35% { opacity: 1; } 60% { opacity: .68; } }
 @keyframes breathe { 0%, 100% { opacity: .35; } 50% { opacity: .85; } }
 @keyframes drift { from { transform: translateX(-90px); } to { transform: translateX(90px); } }
