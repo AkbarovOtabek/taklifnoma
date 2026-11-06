@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import { GirihPattern } from './Ornaments.jsx'
+import { Rose, Sprig } from './Flowers.jsx'
 
 // Нарисованная сцена: вечерний портал-пештак, цветочная арка, ковровая дорожка
 // с фонарями и пара со спины. Ширина 2400 — на телефоне видна центральная
@@ -24,44 +25,6 @@ function archPoints(halfWidth, base, top, n) {
     pts.push([x, y])
   }
   return pts
-}
-
-function Rose({ x, y, r, tone, rot }) {
-  const colors = [
-    ['#fffaf2', '#e8d6bf'],
-    ['#fbe4da', '#dfb3a1'],
-    ['#fdf2dc', '#e2c48d'],
-    ['#f9dfe2', '#ddafb3'],
-  ][tone]
-  return (
-    <g transform={`translate(${x} ${y}) rotate(${rot}) scale(${r})`}>
-      <use href="#leaf" transform="rotate(35) translate(0 -1.05)" />
-      <use href="#leaf" transform="rotate(205) translate(0 -1.05)" />
-      <use href="#leaf" transform="rotate(120) translate(0 -1)" />
-      {[0, 72, 144, 216, 288].map((a) => (
-        <ellipse key={a} cx="0" cy="-.56" rx=".6" ry=".56" transform={`rotate(${a})`} fill={colors[0]} stroke={colors[1]} strokeWidth=".05" />
-      ))}
-      {[36, 126, 216, 306].map((a) => (
-        <ellipse key={a} cx="0" cy="-.3" rx=".38" ry=".36" transform={`rotate(${a})`} fill={colors[0]} stroke={colors[1]} strokeWidth=".05" />
-      ))}
-      <circle r=".22" fill={colors[1]} fillOpacity=".75" />
-    </g>
-  )
-}
-
-// Веточка зелени: между розами видна листва, и арка перестаёт быть «ватной»
-function Sprig({ x, y, r, rot }) {
-  return (
-    <g transform={`translate(${x} ${y}) rotate(${rot}) scale(${r})`} fill="#3c6a53">
-      <path d="M0 0C.2-1.4.2-2.8 0-4" stroke="#3c6a53" strokeWidth=".12" fill="none" />
-      {[-0.7, -1.5, -2.3, -3].map((cy, i) => (
-        <g key={cy}>
-          <ellipse cx=".42" cy={cy} rx=".42" ry=".22" transform={`rotate(${-28 + i * 4} .42 ${cy})`} fillOpacity={0.9 - i * 0.08} />
-          <ellipse cx="-.42" cy={cy - 0.3} rx=".42" ry=".22" transform={`rotate(${28 - i * 4} -.42 ${cy - 0.3})`} fillOpacity={0.82 - i * 0.08} />
-        </g>
-      ))}
-    </g>
-  )
 }
 
 function Lantern({ s = 1, delay = 0 }) {
@@ -378,9 +341,6 @@ export default function Scene() {
         <GirihPattern id="tile" color="#e0c07a" opacity={0.55} size={70} width={1.4} />
         <GirihPattern id="tileSmall" color="#f3dca6" opacity={0.45} size={42} width={1} />
         <GirihPattern id="tileRunner" color="#f0d79e" opacity={0.5} size={58} width={1.2} />
-        <g id="leaf">
-          <path d="M0 0C.5-.3.55-.9 0-1.35-.55-.9-.5-.3 0 0Z" fill="#40654e" />
-        </g>
       </defs>
 
       <rect width="2400" height="1600" fill="url(#sky)" />
@@ -500,44 +460,6 @@ export default function Scene() {
       <g className="mist" filter="url(#soft)" fill="#fff5de" opacity=".5">
         <ellipse cx="900" cy="1370" rx="420" ry="28" />
         <ellipse cx="1560" cy="1400" rx="460" ry="30" />
-      </g>
-
-      {/* пара со спины */}
-      <g transform="translate(1210 1500) scale(.98)">
-        <ellipse cx="-6" cy="4" rx="210" ry="18" fill="#3c2a1c" fillOpacity=".26" filter="url(#softS)" />
-
-        {/* жених */}
-        <g transform="translate(66 0)">
-          <path d="M-29-224C-40-210-46-170-44-120-44-90-38-40-34 0H34C38-40 44-90 44-120 46-170 40-210 29-224 12-232-12-232-29-224Z" fill="url(#suit)" />
-          <path d="M0-218V-104" stroke="#000" strokeOpacity=".45" strokeWidth="2" />
-          <path d="M-2-120V0" stroke="#000" strokeOpacity=".35" strokeWidth="2" />
-          {/* свет из проёма ложится на плечо */}
-          <path d="M-29-224C-40-210-46-170-44-120-44-90-38-40-34 0" fill="none" stroke="#f3cf92" strokeOpacity=".5" strokeWidth="4" />
-          <rect x="-11" y="-246" width="22" height="22" rx="5" fill="#b98a68" />
-          <path d="M-28-262C-28-286-14-296 0-296 14-296 28-286 28-262 28-252 24-243 18-238H-18C-24-243-28-252-28-262Z" fill="#14100e" />
-          <path d="M-27-268C-24-288-12-296 0-296" fill="none" stroke="#e9c48c" strokeOpacity=".45" strokeWidth="3" />
-        </g>
-
-        {/* невеста */}
-        <g transform="translate(-30 0)">
-          <path className="train" d="M-20-138C-46-110-104-76-170-34-200-14-214-2-214 6H118C110-40 76-96 26-138Z" fill="url(#gown)" />
-          <path d="M-24-210C-30-180-30-160-22-136H24C30-160 30-180 22-210 8-218-10-218-24-210Z" fill="#fbf2e2" />
-          <g fill="none" stroke="#d6bb8e" strokeOpacity=".65" strokeWidth="1.4">
-            <path d="M-20-132C-60-90-116-52-178-8" />
-            <path d="M-6-132C-30-90-60-46-92 2" />
-            <path d="M10-132C8-90 4-40 -2 4" />
-            <path d="M22-132C40-90 66-40 84 2" />
-          </g>
-          <rect x="-8" y="-228" width="16" height="20" rx="4" fill="#caa184" />
-          <path d="M-20-252C-20-274-8-282 0-282 8-282 20-274 20-252 20-240 14-230 0-228-14-230-20-240-20-252Z" fill="#231713" />
-          <circle cy="-240" r="11" fill="#2e1e18" />
-          <path d="M-13-268Q0-284 13-268" fill="none" stroke="#f0d596" strokeWidth="3" />
-          {/* фата */}
-          <path className="veil" d="M-11-234C-40-190-62-110-122-40-150-6-172 6-180 8H70C66-30 44-120 11-234Z" fill="url(#veil)" />
-        </g>
-
-        {/* руки вместе */}
-        <path d="M18-130C26-122 34-122 42-130" fill="none" stroke="#c49a79" strokeWidth="9" strokeLinecap="round" />
       </g>
 
       {/* виньетка: углы уходят в темноту, и взгляд сам идёт к проёму */}

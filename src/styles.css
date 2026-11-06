@@ -173,12 +173,41 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   letter-spacing: .28em;
   text-transform: uppercase;
 }
+/* цветочная гирлянда на сгибах конверта и шнур под печатью */
+.bouquet {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  pointer-events: none;
+  --bloom: clamp(34px, 13vmin, 104px);
+}
+.bloom { position: absolute; aspect-ratio: 1; transform: translate(-50%, -50%); }
+.bloom svg { display: block; width: 100%; height: 100%; filter: drop-shadow(0 3px 7px rgba(14, 8, 2, .4)); }
+.env-cord { position: absolute; left: 0; right: 0; top: 47%; height: 14%; z-index: 6; pointer-events: none; }
+.env-cord svg { display: block; width: 100%; height: 100%; }
 .env-flash { position: absolute; inset: 0; z-index: 9; background: #fff3d6; pointer-events: none; }
 
 /* ───────── Первый экран ───────── */
 .hero { position: relative; height: 330vh; height: 330svh; }
 .hero-sticky { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; background: #0a2b38; }
 .hero-stage { position: absolute; inset: 0; will-change: transform; }
+.scene-video { position: absolute; inset: 0; will-change: transform; }
+/* кадр подрезан сверху и снизу на десятую часть: там метка монтажной программы */
+.scene-video .scene { transform: scale(1.25); }
+.hero-corner {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: min(62%, 240px);
+  height: min(32%, 190px);
+  pointer-events: none;
+  background: radial-gradient(circle at 100% 0, rgba(5, 27, 35, .9), rgba(5, 27, 35, .5) 48%, transparent 74%);
+}
+/* на светлом ролике имена без затенения не читаются */
+.hero-on-video .hero-sky-shade {
+  inset: 0 0 32% 0;
+  background: linear-gradient(180deg, rgba(5, 25, 32, .82), rgba(5, 25, 32, .42) 52%, rgba(5, 25, 32, 0));
+}
 .scene { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
 .hero-sky-shade {
   position: absolute;
@@ -213,11 +242,42 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 .hero-names i { font-style: normal; font-size: .62em; color: var(--gold-soft); }
 .letters { display: inline-block; white-space: nowrap; }
 .letters span { display: inline-block; }
+/* дата со временем на плашке: читается и поверх золотого пояса портала */
 .hero-date {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  margin-top: 14px;
+  padding: 9px 20px 10px;
+  border-radius: 16px;
+  background: rgba(5, 27, 35, .58);
+  border: 1px solid rgba(231, 205, 146, .5);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, .32);
+  color: #fff3d6;
+  text-shadow: 0 1px 8px rgba(3, 20, 26, .85);
+}
+.hero-date b {
+  display: flex;
+  align-items: center;
   font-family: var(--caps);
-  font-size: 15px;
-  letter-spacing: .2em;
-  text-shadow: 0 1px 10px rgba(3, 20, 26, .8);
+  font-weight: 400;
+  font-size: clamp(12px, 3.4vw, 15px);
+  letter-spacing: .18em;
+  text-indent: .18em;
+  white-space: nowrap;
+}
+.hero-date em { font-style: normal; color: var(--gold-soft); }
+.hero-date em::before { content: '·'; margin: 0 9px 0 10px; opacity: .55; }
+.hero-date small {
+  font-family: var(--caps);
+  font-size: clamp(9.5px, 2.6vw, 11px);
+  letter-spacing: .22em;
+  text-indent: .22em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--gold-soft);
+  opacity: .92;
 }
 /* живое в сцене */
 /* коробка повторяет «cover» для сцены 3:2 и прижата к низу экрана */
@@ -256,6 +316,60 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   background: radial-gradient(closest-side, rgba(255, 217, 143, .55), transparent);
   animation: flicker 2.6s ease-in-out infinite;
 }
+/* луна дышит светом */
+.fx-moon {
+  left: 40%;
+  top: 16.1%;
+  width: 15%;
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(closest-side, rgba(255, 247, 220, .5), rgba(255, 240, 195, .13) 45%, transparent 72%);
+  animation: moonlight 11s ease-in-out infinite;
+}
+/* звёзды: каждая в своём ритме */
+.fx-star {
+  border-radius: 50%;
+  background: #fff6dc;
+  box-shadow: 0 0 7px 1px rgba(255, 238, 190, .7);
+  animation: twinkle 3s ease-in-out infinite;
+}
+/* лучи из проёма медленно набирают и отпускают силу */
+.fx-beam {
+  top: 62.5%;
+  left: 0;
+  width: 100%;
+  bottom: 0;
+  background: linear-gradient(180deg, rgba(255, 241, 205, .26), rgba(255, 241, 205, 0) 74%);
+  animation: beam 7s ease-in-out infinite alternate;
+}
+.fx-beam-b { animation-duration: 9.5s; animation-direction: alternate-reverse; }
+/* светлячки всплывают над садом */
+.fx-fly {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #ffe3a2;
+  box-shadow: 0 0 10px 3px rgba(255, 214, 130, .5);
+  animation: fly 10s ease-in-out infinite;
+}
+/* пара со спины: отдельный слой, чтобы фигуры дышали */
+.fx-couple { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.couple {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: couple-sway 9s ease-in-out infinite;
+}
+.couple-veil {
+  transform-box: fill-box;
+  transform-origin: 60% 0;
+  animation: veil-wave 7.5s ease-in-out infinite;
+}
+.couple-train {
+  transform-box: fill-box;
+  transform-origin: 70% 0;
+  animation: veil-wave 11s ease-in-out infinite reverse;
+}
+.couple-rim { animation: rim 5.5s ease-in-out infinite; }
 .fx-mist {
   top: 83%;
   width: 28%;
@@ -604,7 +718,10 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   pointer-events: auto;
 }
 .guide-dark .guide-next { text-shadow: 0 1px 6px rgba(0, 0, 0, .7); }
-.guide-next i { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; border: 1px solid currentColor; opacity: .75; }
+.guide-next span { padding: 4px 12px; border-radius: 999px; }
+.guide-next i { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; border: 1px solid currentColor; }
+.guide-dark .guide-next span, .guide-dark .guide-next i { background: rgba(5, 27, 35, .5); }
+.guide-light .guide-next span, .guide-light .guide-next i { background: rgba(255, 251, 242, .62); }
 
 /* короткий совет при открытии: как листать и что страница встанет сама */
 .coach {
@@ -659,6 +776,19 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   .rail span { display: none; }
 }
 
+@keyframes twinkle { 0%, 100% { opacity: .25; transform: scale(.75); } 50% { opacity: 1; transform: scale(1.2); } }
+@keyframes moonlight { 0%, 100% { opacity: .55; } 50% { opacity: 1; } }
+@keyframes beam { 0% { opacity: .25; } 100% { opacity: .7; } }
+@keyframes fly {
+  0% { transform: translate(-50%, -50%); opacity: 0; }
+  18% { opacity: .9; }
+  55% { transform: translate(-50%, -50%) translate(13px, -42px); opacity: .55; }
+  82% { opacity: .4; }
+  100% { transform: translate(-50%, -50%) translate(-9px, -84px); opacity: 0; }
+}
+@keyframes couple-sway { 0%, 100% { transform: rotate(-.5deg); } 50% { transform: rotate(.5deg); } }
+@keyframes veil-wave { 0%, 100% { transform: skewX(-1.1deg) scaleX(.99); } 50% { transform: skewX(1.3deg) scaleX(1.02); } }
+@keyframes rim { 0%, 100% { opacity: .45; } 50% { opacity: 1; } }
 @keyframes flicker { 0%, 100% { opacity: .85; } 35% { opacity: 1; } 60% { opacity: .68; } }
 @keyframes breathe { 0%, 100% { opacity: .35; } 50% { opacity: .85; } }
 @keyframes drift { from { transform: translateX(-90px); } to { transform: translateX(90px); } }

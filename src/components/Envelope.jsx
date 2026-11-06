@@ -2,8 +2,83 @@ import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { wedding } from '../config.js'
 import { GirihLayer } from './Ornaments.jsx'
+import { Bloom } from './Flowers.jsx'
 
 const ease = [0.65, 0, 0.35, 1]
+const fall = [0.5, 0, 0.9, 0.6]
+
+function seeded(seed) {
+  let s = seed
+  return () => (s = (s * 16807) % 2147483647) / 2147483647
+}
+
+// Гирлянда вдоль верхних сгибов: розы сходятся к печати и становятся крупнее
+// ближе к ней. Сгибы заданы в процентах конверта, поэтому цветы ложатся на шов
+// при любой форме экрана.
+const garland = (side) => {
+  const rnd = seeded(side > 0 ? 919 : 373)
+  const mirror = (x) => (side < 0 ? x : 100 - x)
+  const bloom = (x, y, size, green) => ({
+    left: `${mirror(x)}%`,
+    top: `${y}%`,
+    width: `calc(var(--bloom) * ${size.toFixed(2)})`,
+    tone: Math.floor(rnd() * 4),
+    rot: Math.round(rnd() * 360),
+    green,
+  })
+
+  const out = Array.from({ length: 18 }, (_, i) => {
+    const t = 0.24 + (i / 17) * 0.7
+    const green = i % 3 === 2
+    return bloom(
+      50 * t + (rnd() - 0.5) * 6,
+      56 * t + (rnd() - 0.5) * 6,
+      (green ? 0.8 : 0.5) + t * 0.95,
+      green,
+    )
+  })
+
+  // венок у самой печати: сюда садятся самые крупные цветы
+  const collar = [[17, 50.5, 1.5], [12.5, 57, 1.6], [19, 61, 1.25], [8, 62.5, 1.1], [22, 55, 0.95]]
+  collar.forEach(([dx, y, size], i) => out.push(bloom(50 - dx, y, size, i === 3)))
+  return out
+}
+const garlands = [garland(-1), garland(1)]
+
+function Bouquet({ side, opened }) {
+  return (
+    <motion.div
+      className="bouquet"
+      aria-hidden="true"
+      animate={opened ? { x: `${side * 16}%`, y: '11%', rotate: side * 7, opacity: 0 } : {}}
+      transition={{ duration: 1.1, ease: fall, delay: 0.1 }}
+    >
+      {garlands[side < 0 ? 0 : 1].map(({ left, top, width, tone, rot, green }, i) => (
+        <span key={i} className="bloom" style={{ left, top, width }}>
+          <Bloom tone={tone} rot={rot} green={green} />
+        </span>
+      ))}
+    </motion.div>
+  )
+}
+
+// Шнур, которым запечатан конверт: печать лежит прямо на нём
+function Cord({ opened }) {
+  return (
+    <motion.div
+      className="env-cord"
+      aria-hidden="true"
+      animate={{ opacity: opened ? 0 : 1 }}
+      transition={{ duration: 0.7 }}
+    >
+      <svg viewBox="0 0 100 14" preserveAspectRatio="none">
+        <path d="M0 3Q50 9.5 100 3" fill="none" stroke="#e7cd92" strokeOpacity=".7" strokeWidth="2" vectorEffect="non-scaling-stroke" />
+        <path d="M0 4.6Q50 11.1 100 4.6" fill="none" stroke="#c9a35c" strokeOpacity=".45" strokeWidth="2" vectorEffect="non-scaling-stroke" />
+        <path d="M0 3Q50 9.5 100 3" fill="none" stroke="#6f4c1b" strokeOpacity=".45" strokeWidth="2" strokeDasharray="4 5" vectorEffect="non-scaling-stroke" />
+      </svg>
+    </motion.div>
+  )
+}
 
 function Seal({ opened }) {
   const [a, b] = wedding.monogram
@@ -124,6 +199,10 @@ export default function Envelope({ t, guest, opened, onOpen, onDone }) {
           {lines}
         </div>
       </motion.div>
+
+      <Cord opened={opened} />
+      <Bouquet side={-1} opened={opened} />
+      <Bouquet side={1} opened={opened} />
 
       <div className="env-face">
         <Seal opened={opened} />

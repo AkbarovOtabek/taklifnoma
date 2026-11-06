@@ -12,7 +12,7 @@ export const wedding = {
 
   // Необязательно. Положите файлы в папку public и впишите имена, например 'hero.mp4'.
   // Пока пусто, в первом экране идёт нарисованная живая сцена, а музыка синтезируется.
-  heroVideo: '',
+  heroVideo: 'hero.mp4',
   music: '',
 
   uz: {
@@ -88,6 +88,7 @@ export const text = {
     liveMap: 'Jonli xarita',
     live: 'Jonli',
     city: 'Toshkent · UTC+5',
+    cityName: 'Toshkent',
     labels: ['Vaqt', 'Manzil', 'Dastur'],
     progTitle: 'Oqshom dasturi',
     progSub: 'Bayram quyidagi tartibda davom etadi',
@@ -132,6 +133,7 @@ export const text = {
     liveMap: 'Живая карта',
     live: 'Онлайн',
     city: 'Ташкент · UTC+5',
+    cityName: 'Ташкент',
     labels: ['Время', 'Место', 'Программа'],
     progTitle: 'Программа вечера',
     progSub: 'Праздник пройдёт в таком порядке',
