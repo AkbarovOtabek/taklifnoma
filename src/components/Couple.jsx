@@ -1,103 +1,149 @@
 import { memo } from 'react'
 
-// Жених и невеста со спины. В запечённую картинку их не кладём: отдельным слоем
-// они живут — пара едва заметно покачивается, фата и шлейф идут своим ритмом,
-// а свет из проёма дышит на плечах. Система координат та же, что у сцены:
-// 2400×1600, поэтому слой просто ложится поверх и совпадает на любом экране.
+// Жених и невеста перед аркой. Рисунок плоский, как на свадебной графике:
+// тёмно-синие силуэты, кремовое платье с длинным шлейфом, золотые детали
+// и ленты у ног. Отдельным слоем поверх запечённой сцены — чтобы фигуры жили:
+// пара едва заметно покачивается, шлейф и ленты идут своим ритмом.
 //
-// Пропорции как в модной графике: рост около семи голов, ноги — половина роста,
-// плечи у жениха в три головы шириной. Фата шире платья, иначе её не видно.
+// Система координат та же, что у сцены: 2400×1600, слой ложится ровно поверх.
+const NAVY = '#16304d'
+const NAVY_DEEP = '#0e2138'
+const GOLD = '#c9a35c'
+const CREAM = '#fdf6e7'
+
 function Couple() {
   return (
     <svg className="fx-couple" viewBox="0 0 2400 1600" aria-hidden="true">
       <defs>
-        <linearGradient id="cpl-gown" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#fffdf7" />
-          <stop offset=".55" stopColor="#f7ebd8" />
-          <stop offset="1" stopColor="#dcc7a9" />
+        <linearGradient id="cpl-gown" x1=".2" y1="0" x2=".8" y2="1">
+          <stop offset="0" stopColor="#fffdf8" />
+          <stop offset=".5" stopColor="#f8efdd" />
+          <stop offset="1" stopColor="#e8d6b8" />
         </linearGradient>
-        <linearGradient id="cpl-veil" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#fff" stopOpacity=".34" />
-          <stop offset=".7" stopColor="#fff6e4" stopOpacity=".26" />
-          <stop offset="1" stopColor="#fff6e4" stopOpacity=".18" />
-        </linearGradient>
-        <linearGradient id="cpl-suit" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0" stopColor="#24394a" />
-          <stop offset=".45" stopColor="#152632" />
-          <stop offset="1" stopColor="#0a141c" />
+        <linearGradient id="cpl-suit" x1="0" y1="0" x2="1" y2=".3">
+          <stop offset="0" stopColor="#1d3a5c" />
+          <stop offset=".6" stopColor="#16304d" />
+          <stop offset="1" stopColor="#0e2138" />
         </linearGradient>
         <radialGradient id="cpl-shadow">
-          <stop offset="0" stopColor="#3b2a1b" stopOpacity=".4" />
+          <stop offset="0" stopColor="#3b2a1b" stopOpacity=".38" />
           <stop offset="1" stopColor="#3b2a1b" stopOpacity="0" />
         </radialGradient>
       </defs>
 
-      <g transform="translate(1206 1478) scale(1.04)">
-        <ellipse cx="-14" cy="8" rx="215" ry="19" fill="url(#cpl-shadow)" />
+      <g transform="translate(1200 1480) scale(1.02)">
+        <ellipse cx="10" cy="10" rx="235" ry="20" fill="url(#cpl-shadow)" />
+
+        {/* ленты у ног: золотая и синяя, как росчерк пера */}
+        <g className="couple-ribbon" fill="none" strokeLinecap="round">
+          <path d="M-250 2C-170-18-96 16-16 4 64-8 140 20 248-2" stroke={NAVY} strokeWidth="7" strokeOpacity=".85" />
+          <path d="M-238 13C-150 0-70 28 10 15 92 2 168 26 240 11" stroke={GOLD} strokeWidth="4" strokeOpacity=".9" />
+          <path d="M-250 2C-268-6-268-20-252-22-240-24-234-14-240-8" stroke={NAVY} strokeWidth="5" strokeOpacity=".7" />
+          <path d="M248-2C266-10 266-24 250-26 238-28 232-18 238-12" stroke={GOLD} strokeWidth="4" strokeOpacity=".8" />
+        </g>
+
+        {/* веточки по сторонам */}
+        {[-1, 1].map((side) => (
+          <g key={side} className="couple-sprig" transform={`translate(${side * 212} -34) scale(${side} 1)`} fill="none">
+            <path d="M0 0C14-22 20-52 16-78" stroke={GOLD} strokeWidth="2.4" strokeOpacity=".85" />
+            {[0, 1, 2, 3, 4].map((i) => {
+              const y = -10 - i * 15
+              const x = 4 + i * 2.6
+              return (
+                <g key={i}>
+                  <ellipse cx={x + 9} cy={y} rx="9" ry="4.2" transform={`rotate(-28 ${x + 9} ${y})`} fill={i % 2 ? GOLD : '#2e6b7a'} fillOpacity=".8" />
+                  <ellipse cx={x - 7} cy={y - 5} rx="8" ry="3.8" transform={`rotate(26 ${x - 7} ${y - 5})`} fill={i % 2 ? '#2e6b7a' : GOLD} fillOpacity=".7" />
+                </g>
+              )
+            })}
+            <circle cx="22" cy="-86" r="3" fill={GOLD} fillOpacity=".9" />
+          </g>
+        ))}
 
         <g className="couple">
           {/* ───── невеста ───── */}
-          <g transform="translate(-36 0)">
-            <path className="couple-train" d="M-18-170C-38-136-80-92-132-48-160-24-176-10-180 2H92C88-34 56-100 20-170Z" fill="url(#cpl-gown)" />
-            <g className="couple-train" fill="none" stroke="#d6ba8c" strokeOpacity=".5" strokeWidth="1.5">
-              <path d="M-14-162C-50-116-102-70-164 0" />
-              <path d="M-2-162C-24-112-50-56-80 0" />
-              <path d="M8-162C7-112 4-52-1 0" />
-              <path d="M18-162C34-112 58-52 74 0" />
+          <g transform="translate(56 0)">
+            {/* платье: юбка уходит вправо длинным шлейфом */}
+            <path
+              className="couple-train"
+              d="M-15-176C-29-138-39-84-41-12-41-2-39 3-33 5 22 8 112 4 182 0 152-14 94-40 58-84 35-112 19-146 13-176Z"
+              fill="url(#cpl-gown)"
+            />
+            <g className="couple-train" fill="none" stroke={GOLD} strokeOpacity=".5" strokeWidth="1.6">
+              <path d="M-12-168C-24-128-33-72-34 0" />
+              <path d="M0-168C-2-120-6-62-12 2" />
+              <path d="M10-166C22-120 48-66 96-22" />
+              <path d="M-33 5C20 8 110 4 180 0" strokeOpacity=".75" />
             </g>
 
-            {/* корсет: плечи покатые, талия забрана */}
-            <path d="M-26-214C-17-225-9-228 0-228 9-228 17-225 26-214 29-198 24-184 20-170H-18C-22-184-29-198-26-214Z" fill="#fdf7ec" />
-            <path d="M0-226V-172" stroke="#e3d0af" strokeOpacity=".65" strokeWidth="1.3" />
-            <path d="M-18-172C-8-166 10-166 20-172" fill="none" stroke="#e0cba6" strokeWidth="1.6" />
+            {/* корсет с мысом и вырезом */}
+            <path d="M-15-238C-19-218-19-196-15-176H13C16-196 16-218 12-238 4-246-7-246-15-238Z" fill={CREAM} />
+            <path d="M-13-240C-8-230-4-224 0-222 4-224 8-230 12-240 4-246-6-246-13-240Z" fill={NAVY} />
+            <path d="M-15-186C-6-181 5-181 13-186" stroke={GOLD} strokeOpacity=".7" strokeWidth="1.6" fill="none" />
 
-            <rect x="-7" y="-246" width="14" height="22" rx="5" fill="#b08763" />
-            <ellipse cx="0" cy="-264" rx="13.5" ry="16.5" fill="#a67d5b" />
-            <path d="M-14-265C-14-281-7-289 0-289 7-289 14-281 14-265 14-258 12-253 10-250H-10C-12-253-14-258-14-265Z" fill="#2b1c15" />
-            <ellipse cx="0" cy="-247" rx="10.5" ry="9" fill="#241610" />
-            <path d="M-7-252C-3-256 3-256 7-252" fill="none" stroke="#45301f" strokeWidth="1.5" />
-            <circle cx="-12" cy="-258" r="3.4" fill="#fff4e4" />
-            <circle cx="-8" cy="-263" r="2.8" fill="#f8e3d5" />
-            <circle cx="-14" cy="-252" r="2.2" fill="#fdeede" />
+            {/* шея, лицо в профиль, высокая причёска с цветами */}
+            <path d="M-5-250H5V-234C2-230-2-230-5-234Z" fill={NAVY} />
+            <path d="M-11-271C-11-285-5-293 2-293 9-293 14-286 14-276 14-269 12-264 8-260 3-256-5-257-9-261-11-264-11-268-11-271Z" fill={NAVY} />
+            <path d="M-12-275C-17-277-18-271-14-269Z" fill={NAVY} />
+            <path d="M2-299C14-301 22-293 22-283 22-274 17-268 12-266 16-274 15-284 8-288 2-291-6-290-11-285-9-294-5-298 2-299Z" fill={NAVY_DEEP} />
+            <ellipse cx="18" cy="-276" rx="11" ry="9" fill={NAVY_DEEP} />
+            <circle cx="22" cy="-286" r="4.5" fill={CREAM} />
+            <circle cx="27" cy="-277" r="3.6" fill="#f7e7cf" />
+            <circle cx="19" cy="-266" r="3" fill={CREAM} />
 
-            <g className="couple-rim" fill="none" stroke="#f3cf92" strokeWidth="2.4">
-              <path d="M-26-214C-29-198-22-184-18-170" strokeOpacity=".45" />
-              <path d="M-13-276C-8-286-4-289 0-289" strokeOpacity=".32" strokeWidth="1.4" />
+            {/* рука к жениху */}
+            <path d="M-14-230C-26-208-34-184-40-164" stroke={NAVY} strokeWidth="9" strokeLinecap="round" fill="none" />
+
+            {/* букет у талии */}
+            <g transform="translate(-30 -170)">
+              {[[0, 0, 9], [-13, -5, 7], [12, -4, 7.5], [-5, -14, 6.5], [7, 9, 6]].map(([x, y, r], i) => (
+                <circle key={i} cx={x} cy={y} r={r} fill={i % 2 ? '#fffaf0' : CREAM} stroke={GOLD} strokeOpacity=".5" strokeWidth=".9" />
+              ))}
+              {[[-20, -14, -40], [18, -16, 35], [-22, 8, -120], [20, 10, 120]].map(([x, y, a], i) => (
+                <ellipse key={i} cx={x} cy={y} rx="11" ry="4.4" transform={`rotate(${a} ${x} ${y})`} fill={i % 2 ? GOLD : '#2e6b7a'} fillOpacity=".85" />
+              ))}
+              <path d="M0 12C-2 24-2 30 0 36" stroke={GOLD} strokeWidth="2" strokeOpacity=".8" fill="none" />
             </g>
-
-            <path className="couple-veil" d="M-8-252C-30-210-54-126-120-42-154 0-182 16-194 22H100C94-22 58-122 10-252Z" fill="url(#cpl-veil)" />
-            <path className="couple-veil" d="M-194 22C-156 17-96 19-36 21 26 23 74 23 100 22" fill="none" stroke="#fff" strokeOpacity=".38" strokeWidth="2.2" />
           </g>
 
           {/* ───── жених ───── */}
-          <g transform="translate(62 0)">
-            <path d="M-38-158H38V-142H-38Z" fill="#0b151c" />
-            <path d="M-37-154-31 0H-7L-6-154Z" fill="#0e1a22" />
-            <path d="M6-154 7 0H31L37-154Z" fill="#0e1a22" />
-            <ellipse cx="-19" cy="1" rx="15" ry="6" fill="#060c10" />
-            <ellipse cx="19" cy="1" rx="15" ry="6" fill="#060c10" />
+          <g transform="translate(-58 0)">
+            <path d="M-30-150-26 0H-7L-5-150Z" fill={NAVY_DEEP} />
+            <path d="M5-150 7 0H26L30-150Z" fill={NAVY_DEEP} />
+            <ellipse cx="-16" cy="2" rx="14" ry="5.5" fill="#09182a" />
+            <ellipse cx="17" cy="2" rx="14" ry="5.5" fill="#09182a" />
 
-            {/* пиджак: покатые плечи, забранная талия, полы до середины бедра */}
-            <path d="M-46-236C-31-249-15-252 0-252 15-252 31-249 46-236 48-214 41-200 38-190 36-178 39-162 39-150H-39C-39-162-36-178-38-190-41-200-48-214-46-236Z" fill="url(#cpl-suit)" />
-            <path d="M0-250V-150" stroke="#000" strokeOpacity=".32" strokeWidth="2" />
-            <path d="M-28-242C-31-220-30-196-29-172M28-242C31-220 30-196 29-172" fill="none" stroke="#000" strokeOpacity=".2" strokeWidth="2" />
-            <path d="M-13-249C-7-243 7-243 13-249" fill="none" stroke="#efe3c9" strokeOpacity=".75" strokeWidth="3.4" />
+            {/* пиджак */}
+            <path d="M-38-242C-27-252-12-256 0-256 12-256 27-252 38-242 39-218 33-200 31-182 30-162 31-150 31-142H-31C-31-150-30-162-31-182-33-200-39-218-38-242Z" fill="url(#cpl-suit)" />
+            <path d="M-26-250C-31-226-30-202-28-182M26-250C31-226 30-202 28-182" stroke="#09182a" strokeOpacity=".45" strokeWidth="1.8" fill="none" />
+            {/* рубашка и жилет */}
+            <path d="M-12-247C-6-240-2-232 0-224 2-232 6-240 12-247 6-251-6-251-12-247Z" fill={CREAM} />
+            <path d="M-11-244C-7-226-5-206-4-184H5C6-206 8-226 11-244 6-248-6-248-11-244Z" fill="#f6ead3" />
+            <path d="M-9-240C-6-216-5-198-4-182M9-240C6-216 5-198 4-182" stroke={GOLD} strokeOpacity=".55" strokeWidth="1.5" fill="none" />
+            {/* лацканы */}
+            <path d="M-13-247C-20-236-24-220-26-200-18-214-10-230-4-246Z" fill={NAVY_DEEP} />
+            <path d="M13-247C20-236 24-220 26-200 18-214 10-230 4-246Z" fill={NAVY_DEEP} />
+            {/* бабочка и бутоньерка */}
+            <path d="M-11-248 0-243 11-248 11-238 0-233-11-238Z" fill={GOLD} />
+            <circle cx="0" cy="-243" r="3" fill="#8d6429" />
+            <circle cx="-21" cy="-230" r="5" fill={CREAM} stroke={GOLD} strokeOpacity=".6" strokeWidth=".9" />
+            <ellipse cx="-27" cy="-236" rx="7" ry="3" transform="rotate(-35 -27 -236)" fill="#2e6b7a" fillOpacity=".85" />
 
-            <rect x="-8" y="-268" width="16" height="24" rx="5" fill="#9b7252" />
-            <ellipse cx="0" cy="-286" rx="15" ry="18.5" fill="#8d6646" />
-            <path d="M-16-287C-16-303-8-311 0-311 8-311 16-303 16-287 16-279 14-273 11-269 7-272-7-272-11-269-14-273-16-279-16-287Z" fill="#17120f" />
+            {/* шея и голова в профиль с зачёсом */}
+            <path d="M-5-262H6V-250C2-246-2-246-5-250Z" fill={NAVY} />
+            <path d="M-12-286C-12-300-5-308 2-308 10-308 15-301 15-291 15-283 13-278 9-274 3-269-6-270-10-274-12-277-12-282-12-286Z" fill={NAVY} />
+            <path d="M16-290C19-288 19-283 15-281Z" fill={NAVY} />
+            <path d="M-13-289C-14-303-5-312 6-311 15-310 20-303 19-296 16-302 10-306 3-305-4-304-9-298-9-290Z" fill={NAVY_DEEP} />
+            <path d="M18-297C23-300 25-296 23-293 21-291 19-292 17-294Z" fill={NAVY_DEEP} />
 
-            <g className="couple-rim" fill="none" stroke="#f3cf92" strokeWidth="3.2">
-              <path d="M-46-236C-48-214-41-200-38-190-36-178-39-162-39-150" strokeOpacity=".5" />
-              <path d="M46-236C48-214 41-200 38-190 36-178 39-162 39-150" strokeOpacity=".26" />
-              <path d="M-15-296C-10-306-5-311 0-311" strokeOpacity=".32" strokeWidth="1.6" />
-            </g>
+            {/* рука к невесте и рука в кармане */}
+            <path d="M34-236C44-212 50-188 53-166" stroke={NAVY} strokeWidth="9.5" strokeLinecap="round" fill="none" />
+            <path d="M-34-236C-41-212-41-190-37-172" stroke={NAVY} strokeWidth="9.5" strokeLinecap="round" fill="none" />
           </g>
 
-          {/* его рука на её талии */}
-          <path d="M17-240C9-220 0-200-11-180" fill="none" stroke="#16252e" strokeWidth="13" strokeLinecap="round" />
-          <path d="M17-238C10-220 2-202-8-184" fill="none" stroke="#2c4455" strokeOpacity=".45" strokeWidth="2.5" />
-          <ellipse cx="-15" cy="-176" rx="8" ry="6" transform="rotate(-25 -15 -176)" fill="#c0906a" />
+          {/* соединённые руки */}
+          <ellipse cx="4" cy="-160" rx="11" ry="8" transform="rotate(-18 4 -160)" fill={NAVY} />
+          <path d="M-5-163C0-158 6-158 12-162" stroke={GOLD} strokeOpacity=".45" strokeWidth="1.6" fill="none" />
         </g>
       </g>
     </svg>

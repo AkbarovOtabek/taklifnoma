@@ -366,8 +366,13 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 }
 .couple-train {
   transform-box: fill-box;
-  transform-origin: 70% 0;
+  transform-origin: 15% 0;
   animation: veil-wave 11s ease-in-out infinite reverse;
+}
+.couple-sprig {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: couple-sway 7.5s ease-in-out infinite reverse;
 }
 .couple-rim { animation: rim 5.5s ease-in-out infinite; }
 .fx-mist {
