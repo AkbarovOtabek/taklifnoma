@@ -1,8 +1,10 @@
 import { useMemo } from 'react'
 import { GirihPattern } from './Ornaments.jsx'
 
-// Нарисованная сцена: вечерний портал-пештак, цветочная арка, аллея с фонарями, пара со спины.
-// Ширина 2400 — на телефоне видна центральная часть, на компьютере ещё и город по бокам.
+// Нарисованная сцена: вечерний портал-пештак, цветочная арка, ковровая дорожка
+// с фонарями и пара со спины. Ширина 2400 — на телефоне видна центральная
+// часть 1200×1600, на компьютере ещё и город по бокам. Поэтому всё главное
+// держим в полосе x 600…1800, а по краям — только глубина и воздух.
 const CX = 1200
 
 function seeded(seed) {
@@ -26,9 +28,10 @@ function archPoints(halfWidth, base, top, n) {
 
 function Rose({ x, y, r, tone, rot }) {
   const colors = [
-    ['#fff9ef', '#ecd9c0'],
-    ['#fbe7dc', '#e2b9a6'],
-    ['#fdf3df', '#e4c790'],
+    ['#fffaf2', '#e8d6bf'],
+    ['#fbe4da', '#dfb3a1'],
+    ['#fdf2dc', '#e2c48d'],
+    ['#f9dfe2', '#ddafb3'],
   ][tone]
   return (
     <g transform={`translate(${x} ${y}) rotate(${rot}) scale(${r})`}>
@@ -46,19 +49,52 @@ function Rose({ x, y, r, tone, rot }) {
   )
 }
 
-function Lantern({ x, y, s, delay }) {
+// Веточка зелени: между розами видна листва, и арка перестаёт быть «ватной»
+function Sprig({ x, y, r, rot }) {
   return (
-    <g transform={`translate(${x} ${y}) scale(${s})`}>
-      <circle className="flicker" style={{ animationDelay: `${delay}s` }} r="66" cy="-46" fill="url(#lanternGlow)" />
-      <path d="M-16 0H16L13-8H-13Z" fill="#7c5b2b" />
-      <path d="M-13-8V-68L0-86 13-68V-8Z" fill="#ffdf9e" fillOpacity=".92" stroke="#8e6b35" strokeWidth="2.5" />
-      <path d="M0-68V-8M-13-40H13" stroke="#8e6b35" strokeWidth="1.8" />
-      <circle className="flicker" style={{ animationDelay: `${delay}s` }} cy="-34" r="7" fill="#fff6d9" />
+    <g transform={`translate(${x} ${y}) rotate(${rot}) scale(${r})`} fill="#3c6a53">
+      <path d="M0 0C.2-1.4.2-2.8 0-4" stroke="#3c6a53" strokeWidth=".12" fill="none" />
+      {[-0.7, -1.5, -2.3, -3].map((cy, i) => (
+        <g key={cy}>
+          <ellipse cx=".42" cy={cy} rx=".42" ry=".22" transform={`rotate(${-28 + i * 4} .42 ${cy})`} fillOpacity={0.9 - i * 0.08} />
+          <ellipse cx="-.42" cy={cy - 0.3} rx=".42" ry=".22" transform={`rotate(${28 - i * 4} -.42 ${cy - 0.3})`} fillOpacity={0.82 - i * 0.08} />
+        </g>
+      ))}
     </g>
   )
 }
 
-function Dome({ x, y, w, h, tone = 'url(#domeBlue)' }) {
+function Lantern({ s = 1, delay = 0 }) {
+  return (
+    <g transform={`scale(${s})`}>
+      <circle className="flicker" style={{ animationDelay: `${delay}s` }} r="74" cy="-48" fill="url(#lanternGlow)" />
+      <path d="M-17 0H17L13-8H-13Z" fill="#6f4f24" />
+      <path d="M-13-8V-66L0-84 13-66V-8Z" fill="url(#lanternGlass)" stroke="#9a7538" strokeWidth="2.5" />
+      <path d="M0-66V-8M-13-38H13" stroke="#9a7538" strokeWidth="1.6" strokeOpacity=".8" />
+      <path d="M-15-66H15" stroke="#9a7538" strokeWidth="3" />
+      <path d="M0-84V-96" stroke="#9a7538" strokeWidth="2.4" />
+      <circle cy="-98" r="4" fill="#e3c074" />
+      {/* огонёк свечи */}
+      <path className="flicker" style={{ animationDelay: `${delay}s` }} d="M0-44C6-38 5-28 0-24-5-28-6-38 0-44Z" fill="#fff6d9" />
+    </g>
+  )
+}
+
+// Подвесной светильник в глубине зала
+function HangLamp({ x, top, y, s }) {
+  return (
+    <g>
+      <path d={`M${x} ${top}V${y - 86 * s}`} stroke="#8a5a28" strokeWidth="2" />
+      <g transform={`translate(${x} ${y}) scale(${s})`}>
+        <circle r="54" fill="url(#lanternGlow)" />
+        <path d="M-22-6 0-52 22-6 0 18Z" fill="#ffe3a8" fillOpacity=".9" stroke="#9a7538" strokeWidth="2.5" />
+        <circle cy="-14" r="6" fill="#fff8e2" />
+      </g>
+    </g>
+  )
+}
+
+function Dome({ x, y, w, h, tone = 'url(#domeBlue)', trim = '#d3ae66' }) {
   return (
     <g>
       <path
@@ -66,34 +102,94 @@ function Dome({ x, y, w, h, tone = 'url(#domeBlue)' }) {
         fill={tone}
       />
       {[-0.3, -0.12, 0.06, 0.24].map((k) => (
-        <path key={k} d={`M${x + k * w} ${y}Q${x + k * w * 1.1} ${y - h * 0.55} ${x} ${y - h}`} fill="none" stroke="#0a2c3d" strokeOpacity=".35" strokeWidth="2" />
+        <path key={k} d={`M${x + k * w} ${y}Q${x + k * w * 1.1} ${y - h * 0.55} ${x} ${y - h}`} fill="none" stroke="#0a2c3d" strokeOpacity=".32" strokeWidth="2" />
       ))}
       <rect x={x - w * 0.42} y={y} width={w * 0.84} height={h * 0.32} fill="#2d5960" />
-      <path d={`M${x} ${y - h}V${y - h - 26}`} stroke="#d3ae66" strokeWidth="4" />
+      <path d={`M${x} ${y - h}V${y - h - 26}`} stroke={trim} strokeWidth="4" />
       <circle cx={x} cy={y - h - 30} r="5" fill="#ecca82" />
     </g>
   )
 }
 
-function Minaret({ x, base, top, w }) {
+function Minaret({ x, base, top, w, trim = '#c7a25b' }) {
   const bands = []
   for (let y = top + 62; y < base - 20; y += 58) bands.push(y)
+  const body = `M${x - w * 0.42} ${top + 40}L${x - w * 0.56} ${base}H${x + w * 0.56}L${x + w * 0.42} ${top + 40}Z`
   return (
     <g>
-      <path d={`M${x - w * 0.42} ${top + 40}L${x - w * 0.56} ${base}H${x + w * 0.56}L${x + w * 0.42} ${top + 40}Z`} fill="url(#minaretFill)" />
-      <path d={`M${x - w * 0.42} ${top + 40}L${x - w * 0.56} ${base}H${x + w * 0.56}L${x + w * 0.42} ${top + 40}Z`} fill="url(#tile)" />
+      <path d={body} fill="url(#minaretFill)" />
+      <path d={body} fill="url(#tile)" />
       {bands.map((y) => (
-        <rect key={y} x={x - w * 0.54} y={y} width={w * 1.08} height="5" fill="#d3ae66" fillOpacity=".55" />
+        <rect key={y} x={x - w * 0.54} y={y} width={w * 1.08} height="5" fill={trim} fillOpacity=".55" />
       ))}
-      <path d={`M${x - w * 0.62} ${top + 40}H${x + w * 0.62}L${x + w * 0.46} ${top + 12}H${x - w * 0.46}Z`} fill="#c7a25b" />
+      <path d={`M${x - w * 0.62} ${top + 40}H${x + w * 0.62}L${x + w * 0.46} ${top + 12}H${x - w * 0.46}Z`} fill={trim} />
       <path d={`M${x - w * 0.36} ${top + 12}Q${x} ${top - 60} ${x + w * 0.36} ${top + 12}Z`} fill="url(#domeBlue)" />
       <circle cx={x} cy={top - 26} r="5" fill="#ecca82" />
     </g>
   )
 }
 
+// Сталактитовый карниз: ряды маленьких ниш, которыми в Самарканде заполняют
+// переход от стены к своду. Даёт порталу объём даже на маленьком экране.
+function Muqarnas({ x, y, w, rows = 3, cell = 52 }) {
+  const cells = []
+  for (let r = 0; r < rows; r++) {
+    const n = Math.max(1, Math.floor(w / cell) - r * 2)
+    const left = x + (w - n * cell) / 2
+    for (let i = 0; i < n; i++) {
+      const cx = left + cell * (i + 0.5)
+      const cy = y - r * cell * 0.74
+      cells.push(
+        <path
+          key={`${r}-${i}`}
+          d={`M${cx - cell / 2} ${cy}V${cy - cell * 0.28}Q${cx} ${cy - cell * 1.08} ${cx + cell / 2} ${cy - cell * 0.28}V${cy}Z`}
+          fill={r % 2 ? '#0e4557' : '#11566a'}
+          stroke="#cba468"
+          strokeWidth="1.6"
+          strokeOpacity=".65"
+        />,
+      )
+    }
+  }
+  return <g>{cells}</g>
+}
+
+// Гирлянда лампочек: провисающая нить с огоньками по дуге
+function Garland({ x1, y1, x2, y2, sag, n }) {
+  const mx = (x1 + x2) / 2
+  const my = (y1 + y2) / 2 + sag
+  const at = (t) => [
+    (1 - t) ** 2 * x1 + 2 * (1 - t) * t * mx + t * t * x2,
+    (1 - t) ** 2 * y1 + 2 * (1 - t) * t * my + t * t * y2,
+  ]
+  return (
+    <g>
+      <path d={`M${x1} ${y1}Q${mx} ${my} ${x2} ${y2}`} fill="none" stroke="#1b3b44" strokeWidth="3" strokeOpacity=".8" />
+      {Array.from({ length: n }, (_, i) => {
+        const [x, y] = at((i + 0.5) / n)
+        return (
+          <g key={i}>
+            <path d={`M${x} ${y}V${y + 13}`} stroke="#1b3b44" strokeWidth="2" />
+            <circle cx={x} cy={y + 30} r="30" fill="url(#bulbGlow)" />
+            <circle cx={x} cy={y + 20} r="7" fill="#ffeec0" />
+          </g>
+        )
+      })}
+    </g>
+  )
+}
+
+function Cypress({ x, base, h, w, fill = '#143c37' }) {
+  return (
+    <path
+      d={`M${x} ${base - h}C${x + w * 0.5} ${base - h * 0.62} ${x + w * 0.62} ${base - h * 0.2} ${x + w * 0.2} ${base}H${x - w * 0.2}C${x - w * 0.62} ${base - h * 0.2} ${x - w * 0.5} ${base - h * 0.62} ${x} ${base - h}Z`}
+      fill={fill}
+    />
+  )
+}
+
+// Город по обе стороны от портала; виден только на широких экранах
 function Skyline({ side }) {
-  // Город зеркально по обе стороны от портала; виден только на широких экранах
   const m = (x) => (side < 0 ? x : 2400 - x)
   return (
     <g>
@@ -116,45 +212,68 @@ function Skyline({ side }) {
   )
 }
 
-function Cypress({ x, base, h, w }) {
+// Дальний город в дымке: тот же силуэт, но бледнее — за ним читается глубина
+function FarCity() {
   return (
-    <path
-      d={`M${x} ${base - h}C${x + w * 0.5} ${base - h * 0.62} ${x + w * 0.62} ${base - h * 0.2} ${x + w * 0.2} ${base}H${x - w * 0.2}C${x - w * 0.62} ${base - h * 0.2} ${x - w * 0.5} ${base - h * 0.62} ${x} ${base - h}Z`}
-      fill="#143c37"
-    />
+    <g opacity=".42">
+      <Dome x={520} y={1230} w={190} h={170} tone="#36707f" trim="#7fa4a6" />
+      <Dome x={1880} y={1230} w={230} h={200} tone="#36707f" trim="#7fa4a6" />
+      <Minaret x={330} base={1240} top={930} w={38} trim="#7fa4a6" />
+      <Minaret x={2080} base={1240} top={900} w={42} trim="#7fa4a6" />
+      <rect x="640" y="1150" width="220" height="90" fill="#36707f" />
+      <rect x="1560" y="1170" width="260" height="70" fill="#36707f" />
+    </g>
   )
 }
 
 export default function Scene() {
-  const { roses, stars, carpet } = useMemo(() => {
+  const { roses, sprigs, stars, carpet, bokeh } = useMemo(() => {
     const rnd = seeded(20270612)
     const roses = []
-    const push = (x, y, r) => roses.push({
-      x, y, r, tone: Math.floor(rnd() * 3), rot: rnd() * 360,
-    })
-    // плотная арка: два ряда и случайный разброс
-    archPoints(322, 1312, 590, 76).forEach(([x, y]) => {
+    const sprigs = []
+    const push = (x, y, r) => roses.push({ x, y, r, tone: Math.floor(rnd() * 4), rot: rnd() * 360 })
+    // плотная арка: три ряда и случайный разброс
+    archPoints(322, 1312, 590, 76).forEach(([x, y], i) => {
       push(x + (rnd() - 0.5) * 30, y + (rnd() - 0.5) * 30, 13 + rnd() * 10)
       push(x + (rnd() - 0.5) * 58, y + (rnd() - 0.5) * 58, 8 + rnd() * 7)
       push(x + (rnd() - 0.5) * 76, y + (rnd() - 0.5) * 76, 5 + rnd() * 4)
+      if (i % 2) {
+        sprigs.push({
+          x: x + (rnd() - 0.5) * 96,
+          y: y + (rnd() - 0.5) * 96,
+          r: 9 + rnd() * 9,
+          rot: rnd() * 360,
+        })
+      }
     })
     // кусты у основания арки
     for (let i = 0; i < 60; i++) {
       const side = i % 2 ? 1 : -1
       push(CX + side * (250 + rnd() * 150), 1250 + rnd() * 80, 10 + rnd() * 13)
     }
+    for (let i = 0; i < 26; i++) {
+      const side = i % 2 ? 1 : -1
+      sprigs.push({ x: CX + side * (240 + rnd() * 180), y: 1240 + rnd() * 90, r: 10 + rnd() * 10, rot: rnd() * 360 })
+    }
     roses.sort((a, b) => a.r - b.r)
 
-    const stars = Array.from({ length: 90 }, () => ({
-      x: rnd() * 2400, y: rnd() * 560, r: 0.8 + rnd() * 1.9, d: rnd() * 5,
-    }))
-    const carpet = Array.from({ length: 70 }, () => {
+    const stars = Array.from({ length: 150 }, () => {
+      const y = rnd() ** 1.6 * 760
+      return { x: rnd() * 2400, y, r: 0.8 + rnd() * 2.2, o: 0.35 + rnd() * 0.65, d: rnd() * 5 }
+    })
+    const carpet = Array.from({ length: 90 }, () => {
       const t = rnd()
       const y = 1330 + t * 270
       const spread = 60 + t * 420
       return { x: CX + (rnd() - 0.5) * 2 * spread, y, r: 2 + t * 6, rot: rnd() * 180 }
     })
-    return { roses, stars, carpet }
+    const bokeh = Array.from({ length: 34 }, () => ({
+      x: CX + (rnd() - 0.5) * 1700,
+      y: 980 + rnd() * 560,
+      r: 5 + rnd() * 16,
+      o: 0.12 + rnd() * 0.3,
+    }))
+    return { roses, sprigs, stars, carpet, bokeh }
   }, [])
 
   const lanterns = [
@@ -165,16 +284,31 @@ export default function Scene() {
     <svg className="scene" viewBox="0 0 2400 1600" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
       <defs>
         <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#0a2b38" />
-          <stop offset=".3" stopColor="#1d5361" />
-          <stop offset=".55" stopColor="#8f9a8d" />
-          <stop offset=".72" stopColor="#efc593" />
-          <stop offset=".85" stopColor="#f7dfb5" />
+          <stop offset="0" stopColor="#04121c" />
+          <stop offset=".18" stopColor="#0a2a3d" />
+          <stop offset=".38" stopColor="#15505f" />
+          <stop offset=".54" stopColor="#3e7b7c" />
+          <stop offset=".66" stopColor="#c08a5c" />
+          <stop offset=".75" stopColor="#efb87a" />
+          <stop offset=".84" stopColor="#fbdfb2" />
         </linearGradient>
         <radialGradient id="sun" cx=".5" cy=".5" r=".5">
           <stop offset="0" stopColor="#fff2cf" stopOpacity=".95" />
           <stop offset=".4" stopColor="#ffd99a" stopOpacity=".45" />
           <stop offset="1" stopColor="#ffd99a" stopOpacity="0" />
+        </radialGradient>
+        <radialGradient id="moonHalo" cx=".5" cy=".5" r=".5">
+          <stop offset="0" stopColor="#fff6dc" stopOpacity=".55" />
+          <stop offset=".35" stopColor="#ffeec4" stopOpacity=".16" />
+          <stop offset="1" stopColor="#ffeec4" stopOpacity="0" />
+        </radialGradient>
+        <radialGradient id="vignette" cx=".5" cy=".62" r=".78">
+          <stop offset=".55" stopColor="#031219" stopOpacity="0" />
+          <stop offset="1" stopColor="#031219" stopOpacity=".5" />
+        </radialGradient>
+        <radialGradient id="bulbGlow">
+          <stop offset="0" stopColor="#ffe9b4" stopOpacity=".7" />
+          <stop offset="1" stopColor="#ffe9b4" stopOpacity="0" />
         </radialGradient>
         <linearGradient id="domeBlue" x1="0" y1="0" x2="1" y2=".4">
           <stop offset="0" stopColor="#5ec2c4" />
@@ -187,23 +321,36 @@ export default function Scene() {
           <stop offset="1" stopColor="#a48a5f" />
         </linearGradient>
         <linearGradient id="facade" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#14566a" />
-          <stop offset="1" stopColor="#0e3d4c" />
+          <stop offset="0" stopColor="#15607a" />
+          <stop offset=".55" stopColor="#104a5e" />
+          <stop offset="1" stopColor="#0a3140" />
+        </linearGradient>
+        <linearGradient id="lanternGlass" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#fff0c6" />
+          <stop offset="1" stopColor="#f3c472" />
         </linearGradient>
         <radialGradient id="doorLight" cx=".5" cy=".72" r=".75">
-          <stop offset="0" stopColor="#fff7e0" />
-          <stop offset=".34" stopColor="#ffd894" />
-          <stop offset=".7" stopColor="#c77f3a" />
-          <stop offset="1" stopColor="#6e431f" />
+          <stop offset="0" stopColor="#fffaec" />
+          <stop offset=".3" stopColor="#ffdf9f" />
+          <stop offset=".66" stopColor="#cd833c" />
+          <stop offset="1" stopColor="#6b401d" />
         </radialGradient>
         <linearGradient id="aisle" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#ffeecb" />
-          <stop offset=".5" stopColor="#e7d3b3" />
-          <stop offset="1" stopColor="#a48c72" />
+          <stop offset="0" stopColor="#fff0cf" />
+          <stop offset=".5" stopColor="#e9d6b6" />
+          <stop offset="1" stopColor="#a58d73" />
+        </linearGradient>
+        <linearGradient id="runner" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#1c6273" />
+          <stop offset="1" stopColor="#0d3c49" />
         </linearGradient>
         <linearGradient id="ground" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0" stopColor="#3b5a50" />
           <stop offset="1" stopColor="#0f2a2c" />
+        </linearGradient>
+        <linearGradient id="haze" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#f6cf9c" stopOpacity="0" />
+          <stop offset="1" stopColor="#f6cf9c" stopOpacity=".5" />
         </linearGradient>
         <radialGradient id="lanternGlow">
           <stop offset="0" stopColor="#ffd98f" stopOpacity=".75" />
@@ -230,6 +377,7 @@ export default function Scene() {
         <filter id="softS" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="7" /></filter>
         <GirihPattern id="tile" color="#e0c07a" opacity={0.55} size={70} width={1.4} />
         <GirihPattern id="tileSmall" color="#f3dca6" opacity={0.45} size={42} width={1} />
+        <GirihPattern id="tileRunner" color="#f0d79e" opacity={0.5} size={58} width={1.2} />
         <g id="leaf">
           <path d="M0 0C.5-.3.55-.9 0-1.35-.55-.9-.5-.3 0 0Z" fill="#40654e" />
         </g>
@@ -237,11 +385,19 @@ export default function Scene() {
 
       <rect width="2400" height="1600" fill="url(#sky)" />
       {stars.map((s, i) => (
-        <circle key={i} className="twinkle" style={{ animationDelay: `${s.d}s` }} cx={s.x} cy={s.y} r={s.r} fill="#fff4d4" />
+        <circle key={i} className="twinkle" style={{ animationDelay: `${s.d}s` }} cx={s.x} cy={s.y} r={s.r} fill="#fff4d4" opacity={s.o} />
       ))}
+
+      {/* луна над садом */}
+      <circle cx="960" cy="258" r="250" fill="url(#moonHalo)" />
+      <circle cx="960" cy="258" r="62" fill="#fff8e4" />
+      <circle cx="980" cy="246" r="9" fill="#efe0c0" fillOpacity=".55" />
+      <circle cx="944" cy="284" r="13" fill="#efe0c0" fillOpacity=".45" />
+      <circle cx="972" cy="292" r="6" fill="#efe0c0" fillOpacity=".5" />
+
       <circle cx={CX} cy="900" r="760" fill="url(#sun)" />
 
-      <g className="clouds-a" filter="url(#soft)" fill="#fff0da" opacity=".22">
+      <g className="clouds-a" filter="url(#soft)" fill="#fff0da" opacity=".15">
         <ellipse cx="500" cy="500" rx="420" ry="44" />
         <ellipse cx="1040" cy="430" rx="360" ry="34" />
         <ellipse cx="1900" cy="540" rx="520" ry="52" />
@@ -252,14 +408,24 @@ export default function Scene() {
         <ellipse cx="2240" cy="760" rx="440" ry="42" />
       </g>
 
+      <FarCity />
+      <rect y="1020" width="2400" height="280" fill="url(#haze)" />
+
       <Skyline side={-1} />
       <Skyline side={1} />
 
       {/* земля */}
       <rect y="1280" width="2400" height="320" fill="url(#ground)" />
+      {[300, 2100, 420, 1980].map((x, i) => (
+        <Cypress key={`f${x}`} x={x} base={1300} h={[300, 260, 230, 270][i]} w={56} fill="#1d4a46" />
+      ))}
       {[640, 700, 1700, 1760, 560, 1840].map((x, i) => (
         <Cypress key={x} x={x} base={1330} h={[420, 330, 330, 420, 280, 280][i]} w={70} />
       ))}
+
+      {/* гирлянды над боковыми садами */}
+      <Garland x1={-40} y1={700} x2={796} y2={560} sag={150} n={9} />
+      <Garland x1={2440} y1={700} x2={1604} y2={560} sag={150} n={9} />
 
       {/* минареты портала */}
       <Minaret x={796} base={1310} top={330} w={92} />
@@ -271,10 +437,14 @@ export default function Scene() {
       <rect x="842" y="470" width="716" height="46" fill="#c7a25b" />
       <rect x="852" y="480" width="696" height="26" fill="#0f4351" />
       <rect x="852" y="480" width="696" height="26" fill="url(#tileSmall)" />
+      {/* рамка айвана */}
+      <rect x="884" y="540" width="632" height="770" fill="none" stroke="#c7a25b" strokeWidth="5" strokeOpacity=".7" />
       <path d="M906 1310V870C906 750 1060 640 1200 560 1340 640 1494 750 1494 870V1310Z" fill="#0b3440" />
       <path d="M906 1310V870C906 750 1060 640 1200 560 1340 640 1494 750 1494 870V1310" fill="none" stroke="#d3ae66" strokeWidth="6" />
       <path d="M948 1310V885C948 780 1080 680 1200 606 1320 680 1452 780 1452 885V1310Z" fill="#0f4351" />
       <path d="M948 1310V885C948 780 1080 680 1200 606 1320 680 1452 780 1452 885V1310Z" fill="url(#tileSmall)" />
+      {/* мукарны в глубине свода */}
+      <Muqarnas x={1000} y={900} w={400} rows={3} cell={56} />
 
       {/* светящийся проём */}
       <path d="M1030 1310V960C1030 880 1120 800 1200 748 1280 800 1370 880 1370 960V1310Z" fill="url(#doorLight)" />
@@ -285,14 +455,9 @@ export default function Scene() {
         <path d="M1080 1310V985C1080 925 1145 860 1200 822 1255 860 1320 925 1320 985V1310" />
         <path d="M1126 1310V1020C1126 975 1165 925 1200 900 1235 925 1274 975 1274 1020V1310" />
       </g>
-      {[[1200, 930, 1], [1128, 905, 0.72], [1272, 905, 0.72]].map(([x, y, s], i) => (
-        <g key={x}>
-          <path d={`M${x} 760V${y}`} stroke="#7f4f22" strokeWidth="2" />
-          <g transform={`translate(${x} ${y + 62 * s}) scale(${s})`}>
-            <Lantern x={0} y={0} s={0.8} delay={i * 0.5} />
-          </g>
-        </g>
-      ))}
+      <HangLamp x={1200} top={790} y={944} s={1} />
+      <HangLamp x={1124} top={830} y={930} s={0.7} />
+      <HangLamp x={1276} top={830} y={930} s={0.7} />
 
       {/* лучи из проёма */}
       <g className="rays" fill="url(#rays)">
@@ -300,15 +465,18 @@ export default function Scene() {
         <path d="M1220 1000 1380 1600H1640L1280 1000Z" />
       </g>
 
-      {/* аллея */}
+      {/* аллея и ковровая дорожка */}
       <path d="M1040 1310H1360L1980 1600H420Z" fill="url(#aisle)" />
       <path d="M1040 1310 420 1600M1360 1310 1980 1600" stroke="#fff3d0" strokeOpacity=".65" strokeWidth="3" />
-      <path d="M1100 1310 880 1600M1300 1310 1520 1600" stroke="#b5966e" strokeOpacity=".3" strokeWidth="2" />
+      <path d="M1094 1310H1306L1660 1600H740Z" fill="url(#runner)" />
+      <path d="M1094 1310H1306L1660 1600H740Z" fill="url(#tileRunner)" />
+      <path d="M1094 1310 740 1600M1306 1310 1660 1600" stroke="#e3c489" strokeWidth="5" strokeOpacity=".85" />
       {carpet.map((p, i) => (
         <ellipse key={i} cx={p.x} cy={p.y} rx={p.r} ry={p.r * 0.5} transform={`rotate(${p.rot} ${p.x} ${p.y})`} fill={i % 3 ? '#fff6ea' : '#efcdb7'} fillOpacity=".9" />
       ))}
 
       {/* цветы */}
+      {sprigs.map((s, i) => <Sprig key={`s${i}`} {...s} />)}
       {roses.map((r, i) => <Rose key={i} {...r} />)}
 
       {/* фонари */}
@@ -317,11 +485,16 @@ export default function Scene() {
         const y = 1320 + (s - 0.42) * 170
         return (
           <g key={x}>
-            <Lantern x={CX + dx} y={y} s={s} delay={i * 0.7} />
-            <Lantern x={CX - dx} y={y} s={s} delay={i * 0.7 + 0.4} />
+            <g transform={`translate(${CX + dx} ${y})`}><Lantern s={s} delay={i * 0.7} /></g>
+            <g transform={`translate(${CX - dx} ${y})`}><Lantern s={s} delay={i * 0.7 + 0.4} /></g>
           </g>
         )
       })}
+
+      {/* тёплые огоньки в воздухе */}
+      {bokeh.map((b, i) => (
+        <circle key={`b${i}`} cx={b.x} cy={b.y} r={b.r} fill="#ffe7b6" opacity={b.o} filter="url(#softS)" />
+      ))}
 
       {/* туман */}
       <g className="mist" filter="url(#soft)" fill="#fff5de" opacity=".5">
@@ -338,8 +511,11 @@ export default function Scene() {
           <path d="M-29-224C-40-210-46-170-44-120-44-90-38-40-34 0H34C38-40 44-90 44-120 46-170 40-210 29-224 12-232-12-232-29-224Z" fill="url(#suit)" />
           <path d="M0-218V-104" stroke="#000" strokeOpacity=".45" strokeWidth="2" />
           <path d="M-2-120V0" stroke="#000" strokeOpacity=".35" strokeWidth="2" />
+          {/* свет из проёма ложится на плечо */}
+          <path d="M-29-224C-40-210-46-170-44-120-44-90-38-40-34 0" fill="none" stroke="#f3cf92" strokeOpacity=".5" strokeWidth="4" />
           <rect x="-11" y="-246" width="22" height="22" rx="5" fill="#b98a68" />
           <path d="M-28-262C-28-286-14-296 0-296 14-296 28-286 28-262 28-252 24-243 18-238H-18C-24-243-28-252-28-262Z" fill="#14100e" />
+          <path d="M-27-268C-24-288-12-296 0-296" fill="none" stroke="#e9c48c" strokeOpacity=".45" strokeWidth="3" />
         </g>
 
         {/* невеста */}
@@ -359,7 +535,13 @@ export default function Scene() {
           {/* фата */}
           <path className="veil" d="M-11-234C-40-190-62-110-122-40-150-6-172 6-180 8H70C66-30 44-120 11-234Z" fill="url(#veil)" />
         </g>
+
+        {/* руки вместе */}
+        <path d="M18-130C26-122 34-122 42-130" fill="none" stroke="#c49a79" strokeWidth="9" strokeLinecap="round" />
       </g>
+
+      {/* виньетка: углы уходят в темноту, и взгляд сам идёт к проёму */}
+      <rect width="2400" height="1600" fill="url(#vignette)" />
     </svg>
   )
 }

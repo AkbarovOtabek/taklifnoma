@@ -117,7 +117,7 @@ export const SPRING = { stiffness: 140, damping: 30, mass: 0.6, restDelta: 0.000
 // стоит резная арка-дверь, а при прокрутке он проходит сквозь неё — содержимое
 // раскрывается из проёма на весь экран и стоит, пока его читают.
 let portalCount = 0
-export function Portal({ children, tone = 'ivory', className = '' }) {
+export function Portal({ children, tone = 'ivory', className = '', stops = '0.72', nav = '' }) {
   const ref = useRef(null)
   const content = useRef(null)
   const [id] = useState(() => `portal${++portalCount}`)
@@ -147,7 +147,13 @@ export function Portal({ children, tone = 'ivory', className = '' }) {
   const opacity = useTransform(p, [0, 0.1, 0.88, 1], [0.75, 1, 1, 0.4])
 
   return (
-    <section ref={ref} className={`portal portal-${tone} ${className}`}>
+    <section
+      ref={ref}
+      className={`portal portal-${tone} ${className}`}
+      data-stops={stops}
+      data-tone={tone === 'teal' ? 'dark' : 'light'}
+      data-nav={nav}
+    >
       <div className="portal-sticky">
         <motion.div ref={content} className="portal-content" style={{ scale, opacity }}>
           {children}

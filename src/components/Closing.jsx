@@ -5,7 +5,7 @@ import Petals from './Petals.jsx'
 
 export default function Closing({ t, data }) {
   return (
-    <Portal tone="teal" className="closing">
+    <Portal tone="teal" className="closing" nav={t.nav.end}>
       <Petals count={26} />
       <motion.div
         className="closing-mono"

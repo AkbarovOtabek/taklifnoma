@@ -32,7 +32,7 @@ const ease = [0.22, 1, 0.36, 1]
 // Первая часть адреса: зал, дата и время
 export function VenueInfo({ t, data }) {
   return (
-    <Portal className="venue">
+    <Portal className="venue" nav={t.nav.venue}>
       <Reveal><h2 className="script">{t.venueTitle}</h2></Reveal>
       <Reveal delay={0.1}><p className="sub">{t.venueSub}</p></Reveal>
       <Divider />
@@ -95,7 +95,7 @@ export function VenueRoute({ t, data }) {
   }
 
   return (
-    <Portal className="venue">
+    <Portal className="venue" nav={t.nav.route}>
       <div className="venue-card venue-route">
         <div className="venue-map">
           <iframe

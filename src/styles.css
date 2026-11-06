@@ -176,7 +176,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 .env-flash { position: absolute; inset: 0; z-index: 9; background: #fff3d6; pointer-events: none; }
 
 /* ───────── Первый экран ───────── */
-.hero { position: relative; height: 420vh; height: 420svh; }
+.hero { position: relative; height: 330vh; height: 330svh; }
 .hero-sticky { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; background: #0a2b38; }
 .hero-stage { position: absolute; inset: 0; will-change: transform; }
 .scene { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
@@ -218,25 +218,6 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   font-size: 15px;
   letter-spacing: .2em;
   text-shadow: 0 1px 10px rgba(3, 20, 26, .8);
-}
-.hero-scroll { position: absolute; left: 0; right: 0; bottom: 10px; }
-.hero-scroll-in {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  color: #fff;
-  font-family: var(--caps);
-  font-size: 11px;
-  letter-spacing: .26em;
-  text-transform: uppercase;
-  text-shadow: 0 1px 6px rgba(0, 0, 0, .7);
-}
-.hero-scroll i {
-  width: 9px;
-  height: 9px;
-  border-right: 1px solid #fff;
-  border-bottom: 1px solid #fff;
 }
 /* живое в сцене */
 /* коробка повторяет «cover» для сцены 3:2 и прижата к низу экрана */
@@ -318,7 +299,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 }
 
 /* ───────── Арка-дверь: вход внутрь каждой части ───────── */
-.portal { position: relative; height: 230vh; height: 230svh; }
+.portal { position: relative; height: 180vh; height: 180svh; }
 .portal-sticky {
   position: sticky;
   top: 0;
@@ -564,6 +545,118 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 
 @media (min-width: 720px) {
   .count-grid { grid-template-columns: repeat(4, 1fr); max-width: 580px; }
+}
+
+/* ───────── Гид: как смотреть страницу ───────── */
+.guide { position: fixed; inset: 0; z-index: 30; pointer-events: none; }
+.guide-dark { color: #fff2d0; }
+.guide-light { color: var(--gold-deep); }
+
+/* точки-остановки: видно, где гость сейчас, и можно перейти к любому экрану */
+.rail {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  pointer-events: auto;
+}
+.rail-line { position: absolute; right: 13px; top: 11px; bottom: 11px; width: 1px; background: currentColor; opacity: .25; }
+.rail-line i { position: absolute; inset: 0; background: currentColor; transform-origin: 50% 0; transition: transform .5s ease; }
+.rail button { position: relative; width: 27px; height: 22px; display: grid; place-items: center; color: inherit; }
+.rail em { width: 7px; height: 7px; border-radius: 50%; background: currentColor; opacity: .4; transition: opacity .35s, transform .35s; }
+.rail button[aria-current='true'] em { opacity: 1; transform: scale(1.6); }
+.guide-dark .rail em { box-shadow: 0 1px 4px rgba(0, 0, 0, .55); }
+.rail span {
+  position: absolute;
+  right: 25px;
+  white-space: nowrap;
+  font-family: var(--caps);
+  font-size: 10px;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  opacity: 0;
+  transform: translateX(6px);
+  transition: opacity .35s, transform .35s;
+  pointer-events: none;
+}
+.rail button:hover span, .rail button[aria-current='true'] span { opacity: .9; transform: none; }
+.guide-dark .rail span { text-shadow: 0 1px 6px rgba(0, 0, 0, .75); }
+
+/* «дальше» — один шаг до следующей остановки, для тех, кто не листает */
+.guide-next {
+  position: absolute;
+  left: 50%;
+  bottom: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  color: inherit;
+  font-family: var(--caps);
+  font-size: 11px;
+  letter-spacing: .26em;
+  text-indent: .26em;
+  text-transform: uppercase;
+  pointer-events: auto;
+}
+.guide-dark .guide-next { text-shadow: 0 1px 6px rgba(0, 0, 0, .7); }
+.guide-next i { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; border: 1px solid currentColor; opacity: .75; }
+
+/* короткий совет при открытии: как листать и что страница встанет сама */
+.coach {
+  position: absolute;
+  left: 50%;
+  bottom: 84px;
+  width: min(92vw, 360px);
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 12px 15px;
+  text-align: left;
+  color: #fff6df;
+  background: rgba(8, 38, 44, .88);
+  border: 1px solid rgba(231, 205, 146, .5);
+  border-radius: 18px;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, .35);
+  pointer-events: auto;
+}
+.coach-text b {
+  display: block;
+  font-family: var(--caps);
+  font-weight: 400;
+  font-size: 14px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--gold-soft);
+}
+.coach-text small { display: block; margin-top: 3px; font-size: 15px; line-height: 1.3; font-style: italic; color: #e6eeea; }
+.coach-swipe {
+  flex: none;
+  position: relative;
+  width: 22px;
+  height: 38px;
+  border-radius: 12px;
+  border: 1px solid rgba(231, 205, 146, .7);
+}
+.coach-swipe i {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 6px;
+  height: 6px;
+  margin: -3px 0 0 -3px;
+  border-radius: 50%;
+  background: var(--gold-soft);
+}
+
+/* на телефоне подписи остановок не помещаются рядом с текстом */
+@media (max-width: 719px) {
+  .rail { right: 4px; }
+  .rail span { display: none; }
 }
 
 @keyframes flicker { 0%, 100% { opacity: .85; } 35% { opacity: 1; } 60% { opacity: .68; } }

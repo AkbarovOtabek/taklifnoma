@@ -44,7 +44,7 @@ export default function Countdown({ t }) {
   const over = target <= Date.now()
 
   return (
-    <Portal tone="teal" className="count">
+    <Portal tone="teal" className="count" nav={t.nav.count}>
       <Reveal><h2 className="script light">{t.countTitle}</h2></Reveal>
       <Reveal delay={0.1}><p className="sub light">{t.countSub}</p></Reveal>
       <Divider color="#d9b878" />

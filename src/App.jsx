@@ -1,16 +1,17 @@
 import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Volume2, VolumeX } from 'lucide-react'
-import Lenis from 'lenis'
 import 'lenis/dist/lenis.css'
 import { wedding, text } from './config.js'
 import { createMusic } from './music.js'
+import { initScroll, destroyScroll, startScroll, stopScroll } from './scroll.js'
 import Envelope from './components/Envelope.jsx'
 import Hero from './components/Hero.jsx'
 import Countdown from './components/Countdown.jsx'
 import { VenueInfo, VenueRoute } from './components/Venue.jsx'
 import Program from './components/Program.jsx'
 import Closing from './components/Closing.jsx'
+import ScrollGuide from './components/ScrollGuide.jsx'
 
 // ?lang=ru — открыть на русском, ?to=Aziz — обратиться к гостю по имени
 const params = new URLSearchParams(window.location.search)
@@ -34,19 +35,17 @@ export default function App() {
     document.title = `${data.names[0]} & ${data.names[1]} — ${t.gate}`
   }, [lang, data, t])
 
-  // Плавная инерционная прокрутка колесом мыши. На телефоне палец прокручивает
-  // как обычно — там сглаживание даёт пружина в самих анимациях.
-  const lenis = useRef(null)
+  // Плавная инерционная прокрутка и остановка на каждом экране — всё в scroll.js
   useEffect(() => {
-    lenis.current = new Lenis({ lerp: 0.09, autoRaf: true })
-    return () => lenis.current.destroy()
+    initScroll()
+    return destroyScroll
   }, [])
 
   // пока конверт закрыт, страница не прокручивается
   useEffect(() => {
     document.body.style.overflow = revealed ? '' : 'hidden'
-    if (revealed) lenis.current?.start()
-    else lenis.current?.stop()
+    if (revealed) startScroll()
+    else stopScroll()
   }, [revealed])
 
   // свернули вкладку или заблокировали телефон — музыка замолкает
@@ -110,6 +109,8 @@ export default function App() {
         <Program t={t} data={data} />
         <Closing t={t} data={data} />
       </main>
+
+      <ScrollGuide t={t} active={revealed} />
     </>
   )
 }

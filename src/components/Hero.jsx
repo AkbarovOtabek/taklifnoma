@@ -81,7 +81,13 @@ export default function Hero({ t, data, live, revealed }) {
   const dateText = t.fmt(when.day, t.months[when.month], when.year)
 
   return (
-    <section className="hero" ref={ref}>
+    <section
+      className="hero"
+      ref={ref}
+      data-stops="0|0.93"
+      data-tone="dark|light"
+      data-nav={`${t.nav.hero}|${t.nav.card}`}
+    >
       <div className="hero-sticky">
         <motion.div className="hero-stage" style={{ opacity: sceneOp }}>
           {wedding.heroVideo ? (
@@ -130,24 +136,6 @@ export default function Hero({ t, data, live, revealed }) {
             >
               {dateText}
             </motion.p>
-          </motion.div>
-        )}
-
-        {revealed && (
-          <motion.div className="hero-scroll" style={{ opacity: titleOp }}>
-            <motion.div
-              className="hero-scroll-in"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 3 }}
-            >
-              <span>{t.scroll}</span>
-              <motion.i
-                style={{ rotate: 45 }}
-                animate={{ y: [0, 8, 0] }}
-                transition={{ duration: 1.8, repeat: Infinity }}
-              />
-            </motion.div>
           </motion.div>
         )}
       </div>

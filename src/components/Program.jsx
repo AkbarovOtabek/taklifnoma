@@ -6,7 +6,7 @@ const icons = [Coffee, Heart, UtensilsCrossed, Music2, Sparkles]
 
 export default function Program({ t, data }) {
   return (
-    <Portal className="program">
+    <Portal className="program" nav={t.nav.prog}>
       <Reveal><h2 className="script">{t.progTitle}</h2></Reveal>
       <Reveal delay={0.1}><p className="sub">{t.progSub}</p></Reveal>
       <Divider />

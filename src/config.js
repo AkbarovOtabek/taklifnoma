@@ -4,7 +4,7 @@
 
 export const wedding = {
   date: '2026-12-19T18:00:00+05:00',
-  monogram: ['O', 'M'],
+  monogram: ['M', 'O'],
 
   // Зал «Узумзор»: yandex.uz/maps/org/uzumzor/93190156906 и 2gis.uz/tashkent/firm/70000001037810391.
   // Номера организаций нужны, чтобы навигатор вёл к самому залу, а не к адресу рядом.
@@ -64,6 +64,10 @@ export const text = {
     dear: 'Hurmatli',
     theWedding: "Nikoh to'yi",
     scroll: 'Pastga suring',
+    next: 'Keyingisi',
+    guideTitle: "Qanday ko'rish kerak",
+    guideText: "Pastga suring — sahifa har bir ekranda o'zi to'xtaydi. O'ngdagi nuqtalar bilan ham yurish mumkin.",
+    nav: { hero: 'Boshlanish', card: 'Taklifnoma', count: 'Hisob', venue: 'Manzil', route: "Yo'nalish", prog: 'Dastur', end: 'Yakun' },
     countTitle: 'Baxtli kungacha',
     countSub: "Hayotimizning eng go'zal kuni yaqinlashmoqda",
     unit: (i) => ['kun', 'soat', 'daqiqa', 'soniya'][i],
@@ -99,6 +103,10 @@ export const text = {
     dear: 'Дорогой гость,',
     theWedding: 'Свадьба',
     scroll: 'Листайте вниз',
+    next: 'Дальше',
+    guideTitle: 'Как смотреть',
+    guideText: 'Листайте вниз — страница сама остановится на каждом экране. Переходить можно и по точкам справа.',
+    nav: { hero: 'Начало', card: 'Приглашение', count: 'Отсчёт', venue: 'Место', route: 'Маршрут', prog: 'Программа', end: 'Финал' },
     countTitle: 'До счастливого дня',
     countSub: 'Самый красивый день нашей жизни всё ближе',
     unit: (i, n) => {
