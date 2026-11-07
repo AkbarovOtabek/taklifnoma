@@ -13,7 +13,7 @@ export const wedding = {
   // Необязательно. Положите файлы в папку public и впишите имена, например 'hero.mp4'.
   // Пока пусто, в первом экране идёт нарисованная живая сцена, а музыка синтезируется.
   heroVideo: '',
-  // «Мелодия романтическая — сердечки 32», канал «хобби-hobby» на YouTube (gWRPM8YZLI4)
+  // Shoxrux, Izzat Shukurov — «Devonangman» (YouTube LVkEu1J8boo), обрезано с 0:24
   music: 'music.mp3',
 
   uz: {
