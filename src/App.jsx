@@ -86,20 +86,35 @@ export default function App() {
         )}
       </AnimatePresence>
 
-      <motion.div
-        className="controls"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: revealed ? 1 : 0 }}
-        transition={{ delay: 1.6, duration: 1 }}
-        style={{ pointerEvents: revealed ? 'auto' : 'none' }}
-      >
-        <button className="ctl" onClick={toggleSound} aria-label={sound ? 'Mute' : 'Sound'}>
+      <div className="controls">
+        {/* звук появляется, когда конверт открыт: до этого играть нечему */}
+        <motion.button
+          className="ctl"
+          onClick={toggleSound}
+          aria-label={sound ? 'Mute' : 'Sound'}
+          initial={{ opacity: 0, scale: 0.6 }}
+          animate={revealed ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.6 }}
+          transition={{ delay: revealed ? 1.2 : 0, duration: 0.6 }}
+          style={{ pointerEvents: revealed ? 'auto' : 'none' }}
+        >
           {sound ? <Volume2 size={16} /> : <VolumeX size={16} />}
-        </button>
-        <button className="ctl" onClick={() => setLang(lang === 'uz' ? 'ru' : 'uz')}>
-          {lang === 'uz' ? 'RU' : 'UZ'}
-        </button>
-      </motion.div>
+        </motion.button>
+        {/* языки видны сразу, даже на конверте — гость выбирает до того, как откроет */}
+        <div className="lang" role="radiogroup" aria-label="Til / Язык">
+          {['uz', 'ru'].map((code) => (
+            <button
+              key={code}
+              role="radio"
+              aria-checked={lang === code}
+              className={lang === code ? 'on' : ''}
+              onClick={() => setLang(code)}
+            >
+              {lang === code && <motion.span layoutId="lang-pill" className="lang-pill" transition={{ type: 'spring', stiffness: 420, damping: 32 }} />}
+              <b>{code.toUpperCase()}</b>
+            </button>
+          ))}
+        </div>
+      </div>
 
       <main>
         <Hero t={t} data={data} live={opened} revealed={revealed} />

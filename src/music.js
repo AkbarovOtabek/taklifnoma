@@ -4,6 +4,7 @@ export function createMusic(file) {
   if (file) {
     const audio = new Audio(`${import.meta.env.BASE_URL}${file}`)
     audio.loop = true
+    audio.preload = 'auto'
     audio.volume = 0.6
     return { play: () => audio.play().catch(() => {}), pause: () => audio.pause() }
   }
